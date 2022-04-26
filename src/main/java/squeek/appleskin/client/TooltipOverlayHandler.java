@@ -8,14 +8,12 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.CharacterVisitor;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.OrderedText;
+import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import squeek.appleskin.ModConfig;
 import squeek.appleskin.api.event.FoodValuesEvent;
 import squeek.appleskin.api.event.TooltipOverlayEvent;
@@ -78,22 +76,37 @@ public class TooltipOverlayHandler
 	}
 
 	// Bind to text line, because food overlay must apply line offset of all case.
-	public static class FoodOverlayTextComponent extends LiteralText implements OrderedText
+	public static class FoodOverlayTextComponent implements OrderedText, Text
 	{
 		public FoodOverlay foodOverlay;
+		public MutableText mutableText;
 
 		FoodOverlayTextComponent(FoodOverlay foodOverlay)
 		{
-			super("");
+			mutableText = MutableText.of(new TranslatableTextContent(""));
 			this.foodOverlay = foodOverlay;
 		}
 
-		public FoodOverlayTextComponent copy()
-		{
-			return new FoodOverlayTextComponent(foodOverlay);
+		@Override
+		public Style getStyle() {
+			return mutableText.getStyle();
 		}
 
 		@Override
+		public TextContent getContent() {
+			return mutableText.getContent();
+		}
+
+		@Override
+		public List<Text> getSiblings() {
+			return mutableText.getSiblings();
+		}
+
+		public MutableText copy()
+		{
+			return mutableText.copy();
+		}
+
 		public OrderedText asOrderedText()
 		{
 			return this;
@@ -102,7 +115,7 @@ public class TooltipOverlayHandler
 		@Override
 		public boolean accept(CharacterVisitor visitor)
 		{
-			return TextVisitFactory.visitFormatted(this, getStyle(), visitor);
+			return TextVisitFactory.visitFormatted(mutableText, mutableText.getStyle(), visitor);
 		}
 	}
 
