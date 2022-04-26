@@ -36,7 +36,7 @@ public class HUDOverlayHandler
 	public final Vector<IntPoint> foodBarOffsets = new Vector<>();
 
 	private final Random random = new Random();
-	private final Identifier modIcons = new Identifier("squeek.appleskin", "textures/icons.png");
+	private final Identifier modIcons = new Identifier("appleskin", "textures/icons.png");
 
 	public static void init()
 	{
